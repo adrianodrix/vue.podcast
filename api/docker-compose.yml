@@ -1,0 +1,37 @@
+# v2 syntax
+version: '2'
+
+# Named volumes
+volumes:
+  # Postgres Data
+  vue-podcast-postgres-data:
+    driver: local
+
+  # Redis Data
+  vue-podcast-redis-data:
+    driver: local
+
+services:
+  # Postgres (9.5)
+  postgres:
+    image: ambientum/postgres:9.6
+    container_name: vue-podcast-postgres
+    volumes:
+      - vue-podcast-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=vue-podcast
+      - POSTGRES_DB=vue-podcast
+      - POSTGRES_USER=vue-podcast
+
+  # PHP (with Nginx)
+  app:
+    image: ambientum/php:7.1-nginx
+    container_name: vue-podcast-app
+    volumes:
+      - .:/var/www/app
+    ports:
+      - "80:8080"
+    links:
+      - postgres
